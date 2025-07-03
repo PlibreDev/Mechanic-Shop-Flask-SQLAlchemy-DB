@@ -1,8 +1,8 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow, request
+from flask_marshmallow import Marshmallow
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from marshmallow import ValidationError
+from marshmallow import ValidationError, schema, fields
 from sqlalchemy import select
 
 
@@ -62,21 +62,22 @@ class CustomerSchema(ma.SQLAlchemyAutoSchema):
 customer_schema = CustomerSchema()
 customers_schema = CustomerSchema(many=True)
 
-@app.route('/customers', methods=['POST'])
+@app.route('/customers', methods=['POST'])  
 def add_customer():
+    if not request.json:
+        return jsonify({"message": "No input data provided"}), 400
     try:
         customer_data = customer_schema.load(request.json)
     except ValidationError as e:
         return jsonify(e.messages), 400
 
-    query = select(Customer).where(Customer.email==customer_data['email'])
+    query = select(Customer).where(Customer.email == customer_data.email)
     existing_customer = db.session.execute(query).scalars().all()
     if existing_customer:
-        return jsonify{"message": "Customer already exists"}, 400
+        return jsonify({"message": "Customer already exists"}), 400
 
-    customer = Customer(**customer_data)
-    db.session.add(customer)
+    db.session.add(customer_data)
     db.session.commit()
-    return customer_schema.dump(customer), 201
+    return jsonify(customer_schema.dump(customer_data)), 201
 
 app.run()
