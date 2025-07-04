@@ -1,94 +1,27 @@
 {
 	"info": {
-		"_postman_id": "84c5b2ef-8441-486b-9624-0257a012ad7d",
+		"_postman_id": "cb6dc015-6537-48fc-9af8-ecc6d56625e8",
 		"name": "Mechanic Shop API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "45260849"
 	},
 	"item": [
 		{
-			"name": "Create new customers",
+			"name": "Create new customer",
 			"request": {
-				"auth": {
-					"type": "noauth"
-				},
 				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n\"name\": \"Johnny Cash\",\r\n\"email\": \"mynameis@cmoney.com\",\r\n\"phone\": \"8002347985\"\r\n}\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
 					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:5000/customers",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "5000",
-					"path": [
-						"customers"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Read all customers",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [],
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"name\": \"Bob Dylan\",\r\n  \"email\": \"bob@music.com\",\r\n  \"phone\": \"8948474488\"\r\n}"
+					"raw": "{\n  \"name\": \"Johnny Hash\",\n  \"email\": \"mynameaint@money.com\",\n  \"phone\": \"8002347985\"\n}"
 				},
 				"url": {
-					"raw": "http://127.0.0.1:5000/customers",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "5000",
-					"path": [
-						"customers"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Read customers by ID",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"name\": \"Bob Dylan\",\r\n  \"email\": \"bob@music.com\",\r\n  \"phone\": \"8948474488\"\r\n}"
-				},
-				"url": {
-					"raw": "http://127.0.0.1:5000/customers/2",
+					"raw": "http://127.0.0.1:5000/customers/",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -99,7 +32,53 @@
 					"port": "5000",
 					"path": [
 						"customers",
-						"2"
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all customers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/customers/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"customers",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get customer by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/customers/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"customers",
+						"1"
 					]
 				}
 			},
@@ -108,22 +87,19 @@
 		{
 			"name": "Update customer by ID",
 			"request": {
-				"auth": {
-					"type": "noauth"
-				},
 				"method": "PUT",
-				"header": [],
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"name\": \"Bob Dylan\",\r\n  \"email\": \"bob@music.com\",\r\n  \"phone\": \"9045551234\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{\n  \"name\": \"Updated Name\",\n  \"email\": \"updated@email.com\",\n  \"phone\": \"1234567890\"\n}"
 				},
 				"url": {
-					"raw": "http://127.0.0.1:5000/customers/2",
+					"raw": "http://127.0.0.1:5000/customers/5",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -134,26 +110,19 @@
 					"port": "5000",
 					"path": [
 						"customers",
-						"2"
+						"5"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Delete customers by ID",
+			"name": "Delete customer by ID",
 			"request": {
-				"auth": {
-					"type": "noauth"
-				},
 				"method": "DELETE",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"name\": \"Bob Dylan\",\r\n  \"email\": \"bob@music.com\",\r\n  \"phone\": \"9045551234\"\r\n}"
-				},
 				"url": {
-					"raw": "http://127.0.0.1:5000/customers/3",
+					"raw": "http://127.0.0.1:5000/customers/1",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -164,7 +133,245 @@
 					"port": "5000",
 					"path": [
 						"customers",
-						"3"
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create new mechanic",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Grease Monkey\",\n  \"email\": \"monkey@mechanic.com\",\n  \"phone\": \"8002347985\",\n  \"salary\": 27.85\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/mechanics/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"mechanics",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all mechanics",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/mechanics/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"mechanics",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get mechanic by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/mechanics/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"mechanics",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update mechanic by ID",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Updated Mechanic\",\n  \"email\": \"updated@mechanic.com\",\n  \"phone\": \"1234567890\",\n  \"salary\": 30.00\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/mechanics/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"mechanics",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete mechanic by ID",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/mechanics/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"mechanics",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create new service ticket",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"VIN\": \"1HGCM82633A004352\",\n  \"service_date\": \"2025-07-04T12:00:00\",\n  \"service_desc\": \"Oil change and tire rotation\",\n  \"customer_id\": 2\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/service_tickets/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"service_tickets",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all service tickets",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/service_tickets/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"service_tickets",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign mechanic to service ticket",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/service_tickets/1/assign-mechanic/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"service_tickets",
+						"1",
+						"assign-mechanic",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove mechanic from service ticket",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/service_tickets/1/remove-mechanic/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"service_tickets",
+						"1",
+						"remove-mechanic",
+						"1"
 					]
 				}
 			},
