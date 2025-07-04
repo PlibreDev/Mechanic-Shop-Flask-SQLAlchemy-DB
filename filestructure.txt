@@ -1,0 +1,28 @@
+Mechanic Shop API/
+│
+├── app/
+│   ├── blueprints/
+│   │   ├── customers/
+│   │   │   ├── __init__.py
+│   │   │   ├── routes.py
+│   │   │   └── schemas.py
+│   │   ├── mechanics/
+│   │   │   ├── __init__.py
+│   │   │   ├── routes.py
+│   │   │   └── schemas.py
+│   │   └── service_tickets/
+│   │       ├── __init__.py
+│   │       ├── routes.py
+│   │       └── schemas.py
+│   ├── __init__.py
+│   ├── extensions.py
+│   ├── models.py
+│
+├── venv/
+│
+├── app.py
+├── config.py
+├── filestructure.txt
+├── Mechanic Shop API.postman_collection.json
+├── Mechanic Shop ERD.pdf
+├── requirements.txt
