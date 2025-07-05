@@ -10,7 +10,11 @@ Mechanic Shop API/
 │   │   │   ├── __init__.py
 │   │   │   ├── routes.py
 │   │   │   └── schemas.py
-│   │   └── service_tickets/
+│   │   ├── service_tickets/
+│   │   │   ├── __init__.py
+│   │   │   ├── routes.py
+│   │   │   └── schemas.py
+│   │   └── inventory/
 │   │       ├── __init__.py
 │   │       ├── routes.py
 │   │       └── schemas.py

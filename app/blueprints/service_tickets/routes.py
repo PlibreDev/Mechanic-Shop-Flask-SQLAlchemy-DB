@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from marshmallow import ValidationError
 from sqlalchemy import select
-from app.models import db, ServiceTicket, Mechanic
+from app.models import db, ServiceTicket, Mechanic, Inventory, ServiceMechanic
 from . import service_tickets_bp
 from .schemas import service_ticket_schema, service_tickets_schema
 
@@ -55,3 +55,37 @@ def get_service_tickets():
     query = select(ServiceTicket)
     tickets = db.session.execute(query).scalars().all()
     return service_tickets_schema.jsonify(tickets)
+
+# Inventory Management for Service Tickets
+@service_tickets_bp.route('/<int:ticket_id>/add-part/<int:part_id>', methods=['PUT'])
+def add_part_to_ticket(ticket_id, part_id):
+    ticket = db.session.get(ServiceTicket, ticket_id)
+    part = db.session.get(Inventory, part_id)
+    if not ticket or not part:
+        return jsonify({"error": "Ticket or part not found"}), 404
+    return jsonify({"message": "Part added to ticket"}), 200
+
+@service_tickets_bp.route('/<int:ticket_id>/edit', methods=['PUT'])
+def edit_ticket_mechanics(ticket_id):
+    data = request.json
+    add_ids = data.get('add_ids', [])
+    remove_ids = data.get('remove_ids', [])
+
+    ticket = db.session.get(ServiceTicket, ticket_id)
+    if not ticket:
+        return jsonify({"error": "Ticket not found"}), 404
+
+    # Remove mechanics
+    for mech_id in remove_ids:
+        assoc = next((sm for sm in ticket.mechanics if sm.mechanic_id == mech_id), None)
+        if assoc:
+            db.session.delete(assoc)
+
+    # Add mechanics
+    for mech_id in add_ids:
+        mechanic = db.session.get(Mechanic, mech_id)
+        if mechanic and not any(sm.mechanic_id == mech_id for sm in ticket.mechanics):
+            ticket.mechanics.append(ServiceMechanic(mechanic=mechanic))
+
+    db.session.commit()
+    return service_ticket_schema.jsonify(ticket), 200
