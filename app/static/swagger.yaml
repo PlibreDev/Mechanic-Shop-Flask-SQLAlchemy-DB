@@ -1,0 +1,794 @@
+swagger: '2.0'
+info:
+  title: Mechanic Shop API
+  description: API for managing mechanic shop operations including customers, mechanics, service tickets, and inventory
+  version: '1.0.0'
+  contact:
+    name: Mechanic Shop API Support
+    email: support@mechanicshop.com
+
+host: "127.0.0.1:5000"
+basePath: /
+schemes:
+  - http
+
+securityDefinitions:
+  BearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: 'JWT Authorization header using the Bearer scheme. Example: "Authorization: Bearer {token}"'
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+tags:
+  - name: Customers
+    description: Customer management operations
+  - name: Mechanics
+    description: Mechanic management operations
+  - name: Service Tickets
+    description: Service ticket management operations
+  - name: Inventory
+    description: Inventory management operations
+
+paths:
+  /customers/:
+    post:
+      tags:
+        - Customers
+      summary: Create a new customer
+      description: Creates a new customer account with the provided information
+      parameters:
+        - in: body
+          name: customer
+          description: Customer information
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - email
+              - phone
+              - password
+            properties:
+              name:
+                type: string
+                example: "John Doe"
+              email:
+                type: string
+                format: email
+                example: "johndoe@email.com"
+              phone:
+                type: string
+                example: "555-123-4567"
+              password:
+                type: string
+                example: "securepassword123"
+      responses:
+        201:
+          description: Customer created successfully
+          schema:
+            $ref: '#/definitions/Customer'
+        400:
+          description: Bad request - validation error or email already exists
+          schema:
+            $ref: '#/definitions/Error'
+    get:
+      tags:
+        - Customers
+      summary: Get all customers
+      description: Retrieve all customers with pagination support
+      parameters:
+        - name: page
+          in: query
+          type: integer
+          default: 1
+          description: Page number
+        - name: per_page
+          in: query
+          type: integer
+          default: 10
+          description: Number of customers per page
+      responses:
+        200:
+          description: List of customers
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Customer'
+
+  /customers/{customer_id}:
+    get:
+      tags:
+        - Customers
+      summary: Get customer by ID
+      description: Retrieve a specific customer by their ID
+      parameters:
+        - name: customer_id
+          in: path
+          type: integer
+          required: true
+          description: Customer ID
+      responses:
+        200:
+          description: Customer found
+          schema:
+            $ref: '#/definitions/Customer'
+        404:
+          description: Customer not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      tags:
+        - Customers
+      summary: Update customer
+      description: Update customer information (requires authentication)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: customer_id
+          in: path
+          type: integer
+          required: true
+          description: Customer ID
+        - in: body
+          name: customer
+          description: Updated customer information
+          required: true
+          schema:
+            $ref: '#/definitions/CustomerUpdate'
+      responses:
+        200:
+          description: Customer updated successfully
+          schema:
+            $ref: '#/definitions/Customer'
+        401:
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Customer not found
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      tags:
+        - Customers
+      summary: Delete customer
+      description: Delete a customer account (requires authentication)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: customer_id
+          in: path
+          type: integer
+          required: true
+          description: Customer ID
+      responses:
+        200:
+          description: Customer deleted successfully
+          schema:
+            $ref: '#/definitions/Success'
+        401:
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Customer not found
+          schema:
+            $ref: '#/definitions/Error'
+
+  /customers/login:
+    post:
+      tags:
+        - Customers
+      summary: Customer login
+      description: Authenticate customer and receive JWT token
+      parameters:
+        - in: body
+          name: credentials
+          description: Login credentials
+          required: true
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                format: email
+                example: "johndoe@email.com"
+              password:
+                type: string
+                example: "securepassword123"
+      responses:
+        200:
+          description: Login successful
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: "success"
+              message:
+                type: string
+                example: "Login successful"
+              auth_token:
+                type: string
+                example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+        401:
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/Error'
+
+  /customers/my-tickets:
+    get:
+      tags:
+        - Customers
+      summary: Get customer's service tickets
+      description: Get all service tickets for the authenticated customer
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: List of customer's service tickets
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ServiceTicket'
+        401:
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+
+  /mechanics/:
+    post:
+      tags:
+        - Mechanics
+      summary: Create a new mechanic
+      description: Create a new mechanic with the provided information
+      parameters:
+        - in: body
+          name: mechanic
+          description: Mechanic information
+          required: true
+          schema:
+            $ref: '#/definitions/MechanicInput'
+      responses:
+        201:
+          description: Mechanic created successfully
+          schema:
+            $ref: '#/definitions/Mechanic'
+        400:
+          description: Bad request - validation error
+          schema:
+            $ref: '#/definitions/Error'
+    get:
+      tags:
+        - Mechanics
+      summary: Get all mechanics
+      description: Retrieve all mechanics
+      responses:
+        200:
+          description: List of mechanics
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Mechanic'
+
+  /mechanics/{mechanic_id}:
+    get:
+      tags:
+        - Mechanics
+      summary: Get mechanic by ID
+      description: Retrieve a specific mechanic by their ID
+      parameters:
+        - name: mechanic_id
+          in: path
+          type: integer
+          required: true
+          description: Mechanic ID
+      responses:
+        200:
+          description: Mechanic found
+          schema:
+            $ref: '#/definitions/Mechanic'
+        404:
+          description: Mechanic not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      tags:
+        - Mechanics
+      summary: Update mechanic
+      description: Update mechanic information
+      parameters:
+        - name: mechanic_id
+          in: path
+          type: integer
+          required: true
+          description: Mechanic ID
+        - in: body
+          name: mechanic
+          description: Updated mechanic information
+          required: true
+          schema:
+            $ref: '#/definitions/MechanicInput'
+      responses:
+        200:
+          description: Mechanic updated successfully
+          schema:
+            $ref: '#/definitions/Mechanic'
+        404:
+          description: Mechanic not found
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      tags:
+        - Mechanics
+      summary: Delete mechanic
+      description: Delete a mechanic
+      parameters:
+        - name: mechanic_id
+          in: path
+          type: integer
+          required: true
+          description: Mechanic ID
+      responses:
+        200:
+          description: Mechanic deleted successfully
+          schema:
+            $ref: '#/definitions/Success'
+        404:
+          description: Mechanic not found
+          schema:
+            $ref: '#/definitions/Error'
+
+  /mechanics/most-active:
+    get:
+      tags:
+        - Mechanics
+      summary: Get most active mechanics
+      description: Get mechanics ordered by number of service tickets worked on
+      responses:
+        200:
+          description: List of mechanics ordered by activity
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Mechanic'
+
+  /service_tickets/:
+    post:
+      tags:
+        - Service Tickets
+      summary: Create a new service ticket
+      description: Create a new service ticket
+      parameters:
+        - in: body
+          name: service_ticket
+          description: Service ticket information
+          required: true
+          schema:
+            $ref: '#/definitions/ServiceTicketInput'
+      responses:
+        201:
+          description: Service ticket created successfully
+          schema:
+            $ref: '#/definitions/ServiceTicket'
+        400:
+          description: Bad request - validation error
+          schema:
+            $ref: '#/definitions/Error'
+    get:
+      tags:
+        - Service Tickets
+      summary: Get all service tickets
+      description: Retrieve all service tickets
+      responses:
+        200:
+          description: List of service tickets
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ServiceTicket'
+
+  /service_tickets/{ticket_id}/assign-mechanic/{mechanic_id}:
+    put:
+      tags:
+        - Service Tickets
+      summary: Assign mechanic to ticket
+      description: Assign a mechanic to a service ticket
+      parameters:
+        - name: ticket_id
+          in: path
+          type: integer
+          required: true
+          description: Service ticket ID
+        - name: mechanic_id
+          in: path
+          type: integer
+          required: true
+          description: Mechanic ID
+      responses:
+        200:
+          description: Mechanic assigned successfully
+          schema:
+            $ref: '#/definitions/ServiceTicket'
+        404:
+          description: Ticket or mechanic not found
+          schema:
+            $ref: '#/definitions/Error'
+
+  /service_tickets/{ticket_id}/remove-mechanic/{mechanic_id}:
+    put:
+      tags:
+        - Service Tickets
+      summary: Remove mechanic from ticket
+      description: Remove a mechanic from a service ticket
+      parameters:
+        - name: ticket_id
+          in: path
+          type: integer
+          required: true
+          description: Service ticket ID
+        - name: mechanic_id
+          in: path
+          type: integer
+          required: true
+          description: Mechanic ID
+      responses:
+        200:
+          description: Mechanic removed successfully
+          schema:
+            $ref: '#/definitions/ServiceTicket'
+        404:
+          description: Ticket not found or mechanic not assigned
+          schema:
+            $ref: '#/definitions/Error'
+
+  /service_tickets/{ticket_id}/edit:
+    put:
+      tags:
+        - Service Tickets
+      summary: Edit ticket mechanics
+      description: Add and remove multiple mechanics from a service ticket
+      parameters:
+        - name: ticket_id
+          in: path
+          type: integer
+          required: true
+          description: Service ticket ID
+        - in: body
+          name: mechanic_changes
+          description: Mechanic IDs to add and remove
+          required: true
+          schema:
+            type: object
+            properties:
+              add_ids:
+                type: array
+                items:
+                  type: integer
+                example: [1, 2]
+              remove_ids:
+                type: array
+                items:
+                  type: integer
+                example: [3]
+      responses:
+        200:
+          description: Mechanics updated successfully
+          schema:
+            $ref: '#/definitions/ServiceTicket'
+        404:
+          description: Ticket not found
+          schema:
+            $ref: '#/definitions/Error'
+
+  /service_tickets/{ticket_id}/add-part/{part_id}:
+    put:
+      tags:
+        - Service Tickets
+      summary: Add part to ticket
+      description: Add an inventory part to a service ticket
+      parameters:
+        - name: ticket_id
+          in: path
+          type: integer
+          required: true
+          description: Service ticket ID
+        - name: part_id
+          in: path
+          type: integer
+          required: true
+          description: Inventory part ID
+      responses:
+        200:
+          description: Part added successfully
+          schema:
+            $ref: '#/definitions/Success'
+        404:
+          description: Ticket or part not found
+          schema:
+            $ref: '#/definitions/Error'
+
+  /inventory/:
+    post:
+      tags:
+        - Inventory
+      summary: Create a new inventory item
+      description: Create a new inventory part
+      parameters:
+        - in: body
+          name: inventory
+          description: Inventory item information
+          required: true
+          schema:
+            $ref: '#/definitions/InventoryInput'
+      responses:
+        201:
+          description: Inventory item created successfully
+          schema:
+            $ref: '#/definitions/Inventory'
+        400:
+          description: Bad request - validation error
+          schema:
+            $ref: '#/definitions/Error'
+    get:
+      tags:
+        - Inventory
+      summary: Get all inventory items
+      description: Retrieve all inventory items
+      responses:
+        200:
+          description: List of inventory items
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Inventory'
+
+  /inventory/{part_id}:
+    get:
+      tags:
+        - Inventory
+      summary: Get inventory item by ID
+      description: Retrieve a specific inventory item by its ID
+      parameters:
+        - name: part_id
+          in: path
+          type: integer
+          required: true
+          description: Inventory item ID
+      responses:
+        200:
+          description: Inventory item found
+          schema:
+            $ref: '#/definitions/Inventory'
+        404:
+          description: Inventory item not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      tags:
+        - Inventory
+      summary: Update inventory item
+      description: Update inventory item information
+      parameters:
+        - name: part_id
+          in: path
+          type: integer
+          required: true
+          description: Inventory item ID
+        - in: body
+          name: inventory
+          description: Updated inventory item information
+          required: true
+          schema:
+            $ref: '#/definitions/InventoryInput'
+      responses:
+        200:
+          description: Inventory item updated successfully
+          schema:
+            $ref: '#/definitions/Inventory'
+        404:
+          description: Inventory item not found
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      tags:
+        - Inventory
+      summary: Delete inventory item
+      description: Delete an inventory item
+      parameters:
+        - name: part_id
+          in: path
+          type: integer
+          required: true
+          description: Inventory item ID
+      responses:
+        200:
+          description: Inventory item deleted successfully
+          schema:
+            $ref: '#/definitions/Success'
+        404:
+          description: Inventory item not found
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+  Customer:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: "John Doe"
+      email:
+        type: string
+        format: email
+        example: "johndoe@email.com"
+      phone:
+        type: string
+        example: "555-123-4567"
+
+  CustomerUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+        example: "John Doe"
+      email:
+        type: string
+        format: email
+        example: "johndoe@email.com"
+      phone:
+        type: string
+        example: "555-123-4567"
+      password:
+        type: string
+        example: "newpassword123"
+
+  Mechanic:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: "Jane Smith"
+      email:
+        type: string
+        format: email
+        example: "jane@email.com"
+      phone:
+        type: string
+        example: "555-987-6543"
+      salary:
+        type: number
+        format: float
+        example: 55000.0
+
+  MechanicInput:
+    type: object
+    required:
+      - name
+      - email
+      - phone
+      - salary
+    properties:
+      name:
+        type: string
+        example: "Jane Smith"
+      email:
+        type: string
+        format: email
+        example: "jane@email.com"
+      phone:
+        type: string
+        example: "555-987-6543"
+      salary:
+        type: number
+        format: float
+        example: 55000.0
+
+  ServiceTicket:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      VIN:
+        type: string
+        example: "1234567890ABCDEFG"
+      service_date:
+        type: string
+        format: date-time
+        example: "2024-01-15T10:00:00"
+      service_desc:
+        type: string
+        example: "Oil change and tire rotation"
+      customer_id:
+        type: integer
+        example: 1
+
+  ServiceTicketInput:
+    type: object
+    required:
+      - VIN
+      - service_date
+      - service_desc
+      - customer_id
+    properties:
+      VIN:
+        type: string
+        example: "1234567890ABCDEFG"
+      service_date:
+        type: string
+        format: date-time
+        example: "2024-01-15T10:00:00"
+      service_desc:
+        type: string
+        example: "Oil change and tire rotation"
+      customer_id:
+        type: integer
+        example: 1
+
+  Inventory:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: "Brake Pad"
+      price:
+        type: number
+        format: float
+        example: 45.99
+
+  InventoryInput:
+    type: object
+    required:
+      - name
+      - price
+    properties:
+      name:
+        type: string
+        example: "Brake Pad"
+      price:
+        type: number
+        format: float
+        example: 45.99
+
+  Success:
+    type: object
+    properties:
+      message:
+        type: string
+        example: "Operation completed successfully"
+
+  Error:
+    type: object
+    properties:
+      error:
+        type: string
+        example: "Error message"
+      message:
+        type: string
+        example: "Error message"

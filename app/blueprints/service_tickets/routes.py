@@ -26,9 +26,17 @@ def assign_mechanic(ticket_id, mechanic_id):
     if not ticket or not mechanic:
         return jsonify({"error": "Ticket or Mechanic not found"}), 404
 
-    if mechanic not in [sm.mechanic for sm in ticket.mechanics]:
-        from app.models import ServiceMechanic
-        ticket.mechanics.append(ServiceMechanic(mechanic=mechanic))
+    # Check if mechanic is already assigned
+    existing_assignment = db.session.query(ServiceMechanic).filter_by(
+        ticket_id=ticket.id,
+        mechanic_id=mechanic.id
+    ).first()
+    
+    if not existing_assignment:
+        service_mechanic = ServiceMechanic()
+        service_mechanic.ticket_id = ticket.id
+        service_mechanic.mechanic_id = mechanic.id
+        db.session.add(service_mechanic)
         db.session.commit()
     return service_ticket_schema.jsonify(ticket), 200
 
@@ -40,7 +48,11 @@ def remove_mechanic(ticket_id, mechanic_id):
         return jsonify({"error": "Ticket not found"}), 404
 
     # Find the ServiceMechanic association
-    service_mechanic = next((sm for sm in ticket.mechanics if sm.mechanic_id == mechanic_id), None)
+    service_mechanic = db.session.query(ServiceMechanic).filter_by(
+        ticket_id=ticket.id,
+        mechanic_id=mechanic_id
+    ).first()
+    
     if not service_mechanic:
         return jsonify({"error": "Mechanic not assigned to this ticket"}), 404
 
@@ -64,7 +76,14 @@ def add_part_to_ticket(ticket_id, part_id):
     if not ticket or not part:
         return jsonify({"error": "Ticket or part not found"}), 404
     
-    if part not in ticket.parts:
+    # Check if part is already associated with the ticket using the junction table
+    from app.models import ServicePart
+    existing_part = db.session.query(ServicePart).filter_by(
+        service_ticket_id=ticket.id,
+        inventory_id=part.id
+    ).first()
+    
+    if not existing_part:
         ticket.parts.append(part)
         db.session.commit()
     
@@ -73,6 +92,9 @@ def add_part_to_ticket(ticket_id, part_id):
 @service_tickets_bp.route('/<int:ticket_id>/edit', methods=['PUT'])
 def edit_ticket_mechanics(ticket_id):
     data = request.json
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+        
     add_ids = data.get('add_ids', [])
     remove_ids = data.get('remove_ids', [])
 
@@ -82,15 +104,28 @@ def edit_ticket_mechanics(ticket_id):
 
     # Remove mechanics
     for mech_id in remove_ids:
-        assoc = next((sm for sm in ticket.mechanics if sm.mechanic_id == mech_id), None)
+        # Query the ServiceMechanic association directly
+        assoc = db.session.query(ServiceMechanic).filter_by(
+            ticket_id=ticket.id, 
+            mechanic_id=mech_id
+        ).first()
         if assoc:
             db.session.delete(assoc)
 
     # Add mechanics
     for mech_id in add_ids:
         mechanic = db.session.get(Mechanic, mech_id)
-        if mechanic and not any(sm.mechanic_id == mech_id for sm in ticket.mechanics):
-            ticket.mechanics.append(ServiceMechanic(mechanic=mechanic))
+        # Check if association already exists
+        existing_assoc = db.session.query(ServiceMechanic).filter_by(
+            ticket_id=ticket.id, 
+            mechanic_id=mech_id
+        ).first()
+        
+        if mechanic and not existing_assoc:
+            service_mechanic = ServiceMechanic()
+            service_mechanic.ticket_id = ticket.id
+            service_mechanic.mechanic_id = mechanic.id
+            db.session.add(service_mechanic)
 
     db.session.commit()
     return service_ticket_schema.jsonify(ticket), 200

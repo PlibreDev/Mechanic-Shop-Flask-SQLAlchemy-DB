@@ -20,8 +20,13 @@ Mechanic Shop API/
 │   │       └── schemas.py
 │   ├── __init__.py
 │   ├── extensions.py
-│   ├── models.py
-│
+│   └── models.py
+├── tests
+│   ├── __init__.py
+│   ├── test_customers.py
+│   ├── test_inventory.py
+│   ├── test_mechanics.py
+│   └── test_service_tickets.py
 ├── venv/
 │
 ├── app.py

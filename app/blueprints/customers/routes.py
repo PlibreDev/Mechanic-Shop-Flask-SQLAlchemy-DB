@@ -6,13 +6,74 @@ from app.models import Customer, ServiceTicket
 from . import customers_bp
 from app.blueprints.customers import customers_bp
 from app.extensions import limiter, cache, db
-from app.utils.util import encode_token, token_required 
+from app.utils.util import encode_token, token_required
+from flasgger import swag_from 
 
 #Endpoints
 #Create new customer
 @customers_bp.route('/', methods=['POST'])  
 @limiter.limit("6 per hour")
 def add_customer():
+    """
+    Create a new customer
+    ---
+    tags:
+      - Customers
+    summary: Create a new customer
+    description: Creates a new customer account with the provided information
+    parameters:
+      - in: body
+        name: customer
+        description: Customer information
+        required: true
+        schema:
+          type: object
+          required:
+            - name
+            - email
+            - phone
+            - password
+          properties:
+            name:
+              type: string
+              example: "John Doe"
+            email:
+              type: string
+              format: email
+              example: "johndoe@email.com"
+            phone:
+              type: string
+              example: "555-123-4567"
+            password:
+              type: string
+              example: "securepassword123"
+    responses:
+      201:
+        description: Customer created successfully
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: "John Doe"
+            email:
+              type: string
+              example: "johndoe@email.com"
+            phone:
+              type: string
+              example: "555-123-4567"
+      400:
+        description: Bad request - validation error or email already exists
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: "Email already exists"
+    """
     try:
         customer_data = customer_schema.load(request.json)
     except ValidationError as e:
@@ -103,6 +164,55 @@ def delete_customer_by_id(customer_id, customer_id_from_token):
 #Login customer
 @customers_bp.route('/login', methods=['POST'])
 def login():
+    """
+    Customer login
+    ---
+    tags:
+      - Customers
+    summary: Authenticate customer
+    description: Login with email and password to receive authentication token
+    parameters:
+      - in: body
+        name: credentials
+        description: Login credentials
+        required: true
+        schema:
+          type: object
+          required:
+            - email
+            - password
+          properties:
+            email:
+              type: string
+              format: email
+              example: "johndoe@email.com"
+            password:
+              type: string
+              example: "securepassword123"
+    responses:
+      200:
+        description: Login successful
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: "success"
+            message:
+              type: string
+              example: "Login successful"
+            auth_token:
+              type: string
+              example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+      401:
+        description: Invalid credentials
+        schema:
+          type: object
+          properties:
+            messages:
+              type: string
+              example: "Invalid username or password"
+    """
     try:
         credentials = login_schema.load(request.json)
     except ValidationError as e:
@@ -127,21 +237,52 @@ def login():
     else:
         return jsonify({"messages": "Invalid username or password"}), 401
 
-#Delete a customer
-@customers_bp.route("/", methods=["DELETE"])
-@token_required
-def delete_customer(customer_id):
-    query = select(Customer).where(Customer.id == customer_id)
-    customer = db.session.execute(query).scalars().first()
-
-    db.session.delete(customer)
-    db.session.commit()
-    return jsonify({"message": "Customer deleted successfully"})
-
 # Get all service tickets for a customer
 @customers_bp.route('/my-tickets', methods=['GET'])
 @token_required
 def get_my_tickets(customer_id_from_token):
+    """
+    Get customer's service tickets
+    ---
+    tags:
+      - Customers
+    summary: Get all service tickets for authenticated customer
+    description: Returns all service tickets associated with the authenticated customer
+    security:
+      - BearerAuth: []
+    responses:
+      200:
+        description: List of customer's service tickets
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              VIN:
+                type: string
+                example: "1234567890ABCDEFG"
+              service_date:
+                type: string
+                format: date-time
+                example: "2024-01-15T10:00:00"
+              service_desc:
+                type: string
+                example: "Oil change and tire rotation"
+              customer_id:
+                type: integer
+                example: 1
+      401:
+        description: Unauthorized - Invalid or missing token
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: "Token is missing!"
+    """
     # Query all service tickets for this customer
     query = select(ServiceTicket).where(ServiceTicket.customer_id == customer_id_from_token)
     tickets = db.session.execute(query).scalars().all()

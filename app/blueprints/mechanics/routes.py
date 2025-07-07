@@ -8,6 +8,71 @@ from .schemas import mechanic_schema, mechanics_schema
 # Create a new Mechanic
 @mechanics_bp.route('/', methods=['POST'])
 def add_mechanic():
+    """
+    Create a new mechanic
+    ---
+    tags:
+      - Mechanics
+    summary: Create a new mechanic
+    description: Creates a new mechanic with the provided information
+    parameters:
+      - in: body
+        name: mechanic
+        description: Mechanic information
+        required: true
+        schema:
+          type: object
+          required:
+            - name
+            - email
+            - phone
+            - salary
+          properties:
+            name:
+              type: string
+              example: "Jane Smith"
+            email:
+              type: string
+              format: email
+              example: "jane@example.com"
+            phone:
+              type: string
+              example: "555-987-6543"
+            salary:
+              type: number
+              format: float
+              example: 55000.0
+    responses:
+      201:
+        description: Mechanic created successfully
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: "Jane Smith"
+            email:
+              type: string
+              example: "jane@example.com"
+            phone:
+              type: string
+              example: "555-987-6543"
+            salary:
+              type: number
+              format: float
+              example: 55000.0
+      400:
+        description: Bad request - validation error
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: "Validation failed"
+    """
     try:
         mechanic_data = mechanic_schema.load(request.json)
     except ValidationError as e:
