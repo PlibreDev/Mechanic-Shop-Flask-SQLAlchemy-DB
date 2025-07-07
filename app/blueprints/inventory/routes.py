@@ -48,4 +48,5 @@ def delete_inventory(part_id):
         return jsonify({"error": "Part not found"}), 404
     db.session.delete(part)
     db.session.commit()
+    return jsonify({"message": "Part deleted successfully"}), 200
     return jsonify({"message": "Part deleted"}), 200

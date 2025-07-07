@@ -63,6 +63,11 @@ def add_part_to_ticket(ticket_id, part_id):
     part = db.session.get(Inventory, part_id)
     if not ticket or not part:
         return jsonify({"error": "Ticket or part not found"}), 404
+    
+    if part not in ticket.parts:
+        ticket.parts.append(part)
+        db.session.commit()
+    
     return jsonify({"message": "Part added to ticket"}), 200
 
 @service_tickets_bp.route('/<int:ticket_id>/edit', methods=['PUT'])

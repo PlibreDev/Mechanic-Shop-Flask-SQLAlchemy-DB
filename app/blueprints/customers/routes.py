@@ -1,4 +1,4 @@
-from .schemas import customer_schema, customers_schema
+from .schemas import customer_schema, customers_schema, login_schema
 from flask import request, jsonify
 from marshmallow import ValidationError
 from sqlalchemy import select
@@ -103,9 +103,11 @@ def delete_customer_by_id(customer_id, customer_id_from_token):
 #Login customer
 @customers_bp.route('/login', methods=['POST'])
 def login():
-    credentials = request.json
-    if not credentials or 'email' not in credentials or 'password' not in credentials:
-        return jsonify({'messages': 'Invalid payload, expecting email and password'}), 400
+    try:
+        credentials = login_schema.load(request.json)
+    except ValidationError as e:
+        return jsonify(e.messages), 400
+    
     username = credentials['email']
     password = credentials['password']
 
