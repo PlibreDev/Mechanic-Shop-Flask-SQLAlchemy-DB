@@ -57,6 +57,8 @@ mechanic-shop-api/
 │   │   ├── mechanics/              # Mechanic-related endpoints
 │   │   ├── service_tickets/        # Service ticket endpoints
 │   │   └── inventory/              # Inventory management
+│   ├── static/                     # Static files
+│   │   └── swagger.yaml            # Swagger API specification
 │   └── utils/
 │       └── util.py                 # Utility functions (JWT, decorators)
 ├── tests/                          # Comprehensive test suite
@@ -127,7 +129,7 @@ Consider setting these environment variables for production:
 ## API Documentation
 
 ### Interactive Documentation
-Access the Swagger UI documentation at: `http://localhost:5000/docs/`
+Access the Swagger UI documentation at: `http://localhost:5000/api/docs/`
 
 ### Base URL
 ```
@@ -242,14 +244,14 @@ The project includes comprehensive test coverage for all endpoints.
 
 ### Running Tests
 ```bash
-# Run all tests
+# Run all tests from project root
 python -m unittest discover tests
-
-# Or use the test runner
-python run_tests.py
 
 # Run specific test file
 python -m unittest tests.test_customers
+
+# Run with verbose output
+python -m unittest discover tests -v
 ```
 
 ### Test Structure
