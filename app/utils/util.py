@@ -3,8 +3,9 @@ from jose import jwt
 import jose
 from functools import wraps
 from flask import request, jsonify
+import os
 
-SECRET_KEY = "your_secret_key"
+SECRET_KEY = os.environ.get('SECRET_KEY') or "super secret secrets"
 
 def token_required(f):
     @wraps(f)
@@ -40,4 +41,3 @@ def encode_token(customer_id):
 
     token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
     return token
-
