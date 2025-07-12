@@ -7,7 +7,6 @@ from . import customers_bp
 from app.blueprints.customers import customers_bp
 from app.extensions import limiter, cache, db
 from app.utils.util import encode_token, token_required
-from flasgger import swag_from 
 
 #Endpoints
 #Create new customer
