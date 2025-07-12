@@ -1,37 +1,54 @@
-Mechanic Shop API/
+Mechanic Shop API - Production Ready/
 │
 ├── app/
 │   ├── blueprints/
 │   │   ├── customers/
 │   │   │   ├── __init__.py
-│   │   │   ├── routes.py
-│   │   │   └── schemas.py
+│   │   │   ├── routes.py           # Customer CRUD, auth, JWT endpoints
+│   │   │   └── schemas.py          # Customer validation schemas
 │   │   ├── mechanics/
 │   │   │   ├── __init__.py
-│   │   │   ├── routes.py
-│   │   │   └── schemas.py
+│   │   │   ├── routes.py           # Mechanic CRUD, analytics endpoints
+│   │   │   └── schemas.py          # Mechanic validation schemas
 │   │   ├── service_tickets/
 │   │   │   ├── __init__.py
-│   │   │   ├── routes.py
-│   │   │   └── schemas.py
+│   │   │   ├── routes.py           # Service ticket management
+│   │   │   └── schemas.py          # Service ticket validation schemas
 │   │   └── inventory/
 │   │       ├── __init__.py
-│   │       ├── routes.py
-│   │       └── schemas.py
+│   │       ├── routes.py           # Inventory CRUD operations
+│   │       └── schemas.py          # Inventory validation schemas
+│   ├── static/
+│   │   └── swagger.yaml            # OpenAPI/Swagger documentation
+│   ├── utils/
+│   │   └── util.py                 # JWT utilities, decorators
+│   ├── __init__.py                 # Flask app factory
+│   ├── extensions.py               # Flask extensions (SQLAlchemy, etc.)
+│   └── models.py                   # Database models
+├── tests/
 │   ├── __init__.py
-│   ├── extensions.py
-│   └── models.py
-├── tests
-│   ├── __init__.py
-│   ├── test_customers.py
-│   ├── test_inventory.py
-│   ├── test_mechanics.py
-│   └── test_service_tickets.py
-├── venv/
+│   ├── test_customers.py           # Customer endpoint tests
+│   ├── test_inventory.py           # Inventory endpoint tests
+│   ├── test_mechanics.py           # Mechanic endpoint tests
+│   └── test_service_tickets.py     # Service ticket tests
+├── venv/                           # Virtual environment (local only)
 │
-├── app.py
-├── config.py
-├── filestructure.txt
-├── Mechanic Shop API.postman_collection.json
-├── Mechanic Shop ERD.pdf
-├── requirements.txt
+├── .env                            # Environment variables (local only, not in git)
+├── .gitignore                      # Git ignore file
+├── config.py                       # Configuration classes
+├── file_structure.txt              # This file
+├── flask_app.py                    # Production entry point
+├── Mechanic Shop API (assignment).postman_collection.json
+├── Mechanic Shop API (End of Module 1 project).postman_collection.json
+├── Mechanic Shop ERD.pdf           # Database schema diagram
+├── README.md                       # Project documentation
+└── requirements.txt                # Python dependencies
+
+Production Features:
+├── 🚀 Deployed on Render
+├── 🗄️  PostgreSQL Database (hosted)
+├── 🔐 JWT Authentication
+├── 🛡️  Rate Limiting & Caching
+├── 📚 Swagger UI Documentation
+├── 🧪 Comprehensive Test Suite
+└── ⚙️  Production Configuration
