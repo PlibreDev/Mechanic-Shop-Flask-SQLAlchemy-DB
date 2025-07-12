@@ -183,6 +183,8 @@ mechanic-shop-api/
    - **Start Command**: `gunicorn flask_app:app`
    - **Python Version**: 3.13.4 (auto-detected)
 
+**Note**: The `python-dotenv` package is included in requirements.txt for environment variable loading, but actual environment variables should be set in Render's dashboard for production.
+
 4. **Deploy**
    - Connect GitHub repository to Render
    - Enable auto-deploy on pushes to main branch
