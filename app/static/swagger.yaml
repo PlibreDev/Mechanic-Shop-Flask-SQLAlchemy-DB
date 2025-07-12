@@ -7,7 +7,7 @@ info:
     name: Mechanic Shop API Support
     email: support@mechanicshop.com
 
-host: "https://mechanic-shop-flask-sqlalchemy-db.onrender.com"
+host: "mechanic-shop-flask-sqlalchemy-db.onrender.com"
 basePath: /
 schemes:
   - "https"
